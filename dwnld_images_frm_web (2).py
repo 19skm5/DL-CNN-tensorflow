@@ -9,11 +9,13 @@ import pandas as pd
 import numpy as np
 import glob
 import datetime
+#Import 'image_resize_zee' for resize function
+from image_resize_zee import image_resize
 
 print(datetime.datetime.now())
 default_dir = os.getcwd()
-#clean up default directory
 filelist = glob.glob(default_dir + "\\*.jpg")
+                     #clean up default directory "\\*.jpg")
 for file in filelist:
      os.remove(file)
 
@@ -22,7 +24,11 @@ curr_dir=pathlib.Path(__file__).resolve().parent
 tgt_dir = str(curr_dir) + "\\" + 'dwnld'
 if not os.path.exists(tgt_dir):
     os.makedirs(tgt_dir)
-#print(tgt_dir)
+
+#create target resize dir under download (tgt_dir)
+rsize_dir=str(curr_dir) + "\\" + 'rsize'
+if not os.path.exists(rsize_dir):
+    os.makedirs(rsize_dir)
 
 #setting the log file to capture the steps of downloading images
 file1 = open(tgt_dir + "\\download.log","w")
@@ -42,8 +48,8 @@ image_file['file_name']="NA"
 file1.write(tgt_dir + "--\n")
 
 #For loop to download each image, flag when the return code is not 200
-for i in range(len(image_file)):
-#for i in range(10):
+#for i in range(len(image_file)):
+for i in range(10):
     #print(i)
     file1.write(str(i))
     image_url = image_file.iloc[i, 7]
@@ -54,9 +60,9 @@ for i in range(len(image_file)):
     local_file=""
     if resp.status_code==200:
         local_file = open(image_url[image_url.rfind("/")+1:], 'wb')
-
         #file_loc="c:/Swadesh/MMAI/Research_paper/" + local_file.name
         file_loc = tgt_dir + "\\" + local_file.name
+        file_name=local_file.name
         #print(file_loc + "--")
         # Set decode_content value to True, otherwise the downloaded image file's size will be zero.
         file1.write(file_loc + "--")
@@ -75,6 +81,8 @@ for i in range(len(image_file)):
         #print("in the if block")
         #print(resp.status_code)
         local_file.close()
+        #print(file_name)
+        image_resize(file_name,tgt_dir,rsize_dir, 500)
     else:
        # print("in the else block")
        # print(resp.status_code)
